@@ -8,9 +8,107 @@ app.use(express.json());
 
 let inventory = [
 
-  { id: 1, name: "Laptop", quantity: 5 },
+  {  article: "Mobiltelefon",
+     make: "Samsung",
+     model: "Galaxy",
+     equipmentId:"RV908GT5462",
+     quantity: 1,
+     status: "I drift",
+     warrantyPeriodStart: "2025-03-03",
+     warrantyPeriodEnd: "2028-03-03",
+     ageInventoryDays: 402,
+     purchaseValue: 1889,
+     arrivedFrom: "Kalle Kallesson",
+    purchasedTo: "Lotta Lottsson",
+    notes: "Avslutat sin anställning",
+    category: "Telefoni",
+    user: {
+      name: "Anna",
+      email: "anna@yh.se",
+      avvecklad: false
+    }
+    },
 
-  { id: 2, name: "Keyboard", quantity: 10 }
+  {article: "Mobiltelefon",
+     make: "Samsung",
+     model: "Galaxy",
+     equipmentId:"RV908GT5462",
+     quantity: 1,
+     status: "I drift",
+     warrantyPeriodStart: "2025-03-03",
+     warrantyPeriodEnd: "2028-03-03",
+     ageInventoryDays: 402,
+     purchaseValue: 1889,
+     arrivedFrom: "Kalle Kallesson",
+    purchasedTo: "Lotta Lottsson",
+    notes: "Avslutat sin anställning",
+    category: "Telefoni",
+    user: {
+      name: "Anna",
+      email: "anna@yh.se",
+      avvecklad: false
+    }
+},
+{article: "Mobiltelefon",
+     make: "Samsung",
+     model: "Galaxy",
+     equipmentId:"RV908GT5462",
+     quantity: 1,
+     status: "I drift",
+     warrantyPeriodStart: "2025-03-03",
+     warrantyPeriodEnd: "2028-03-03",
+     ageInventoryDays: 402,
+     purchaseValue: 1889,
+     arrivedFrom: "Kalle Kallesson",
+    purchasedTo: "Lotta Lottsson",
+    notes: "Avslutat sin anställning",
+    category: "Telefoni",
+    user:{
+      name: "Anna",
+      email: "anna@yh.se",
+      avvecklad: false
+    }
+},
+{article: "Mobiltelefon",
+     make: "Samsung",
+     model: "Galaxy",
+     equipmentId:"RV908GT5462",
+     quantity: 1,
+     status: "I drift",
+     warrantyPeriodStart: "2025-03-03",
+     warrantyPeriodEnd: "2028-03-03",
+     ageInventoryDays: 402,
+     purchaseValue: 1889,
+     arrivedFrom: "Kalle Kallesson",
+    purchasedTo: "Lotta Lottsson",
+    notes: "Avslutat sin anställning",
+    category: "Telefoni",
+    user: {
+      name: "Anna",
+      email: "anna@yh.se",
+      avvecklad: false
+    }
+},
+{article: "Mobiltelefon",
+     make: "Samsung",
+     model: "Galaxy",
+     equipmentId:"RV908GT5462",
+     quantity: 1,
+     status: "I drift",
+     warrantyPeriodStart: "2025-03-03",
+     warrantyPeriodEnd: "2028-03-03",
+     ageInventoryDays: 402,
+     purchaseValue: 1889,
+     arrivedFrom: "Kalle Kallesson",
+    purchasedTo: "Lotta Lottsson",
+    notes: "Avslutat sin anställning",
+    category: "Telefoni",
+    user: {
+      name: "Anna",
+      email: "anna@yh.se",
+      avvecklad: false
+    }
+}
 
 ];
  
