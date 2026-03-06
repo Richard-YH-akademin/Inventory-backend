@@ -32,4 +32,4 @@ const products = [
   },
 ];
 
-module.exports = { users, categories, products };
+export { users, categories, products };
