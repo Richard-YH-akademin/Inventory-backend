@@ -1,10 +1,13 @@
-const express = require("express");
-const cors = require("cors");
-const { products } = require("./db/mockData");
+import express from "express";
+import cors from "cors";
+import { products } from "./db/mockData.js";
+
  
 const app = express();
  
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:5174"]
+}));
 app.use(express.json());
 
 
