@@ -108,4 +108,17 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
+//DELETE /api/products/:id FUNKAR
+router.delete('/:id', async (req, res) => {
+ 
+  try {
+    const {id} = req.params;
+    const result = await pool.query('DELETE FROM products WHERE product_id = $1', [id]);
+    res.status(200).json({message : "Produkt borttagen"});
+   
+  } catch (error) {
+    res.status(500).json({error : error.message});
+  }
+});
+
 export default router;
