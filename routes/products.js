@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 //import { products } from '../db/mockData';
-import pool from "../db.js";
+import pool from "../db/db.js";
 //const pool = require('../db')
 
 // GET /api/products
