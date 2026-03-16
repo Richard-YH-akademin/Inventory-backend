@@ -14,6 +14,7 @@ const categories = [
 
 const products = [
   {
+    product_id: 1,
     equipment_id: "RV908GT5462",
     article: "Mobiltelefon",
     make: "Samsung",
