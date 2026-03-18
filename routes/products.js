@@ -1,17 +1,42 @@
 import express from 'express';
 const router = express.Router();
-//import { products } from '../db/mockData';
 import pool from "../db/db.js";
-//const pool = require('../db')
 
-// GET /api/products
+//GET /api/products
 router.get('/', async (req, res) => {
-  try{
-    const result = await pool.query('SELECT * FROM products')
+  try {
+    const FILTERABLE_FIELDS = ['category_id', 'user_id', 'status_id', 'purchased_to_user_id', 'arrived_from', 'article', 'make', 'model'];
+ 
+    const conditions = [];
+    const values = [];
+ 
+    //fritext sökning på utrustningsid
+    if (req.query.equipment_id) {
+      values.push(`%${req.query.equipment_id}%`);
+      conditions.push(`equipment_id::text ILIKE $${values.length}`); //ILIKE = gör den case-insensitive??
+    }
+ 
+    //Filter
+    Object.entries(req.query).forEach(([key, value]) =>{
+      if (FILTERABLE_FIELDS.includes(key) && value) {
+        values.push(value);
+        conditions.push(`${key} = $${values.length}`);
+      }
+    });
+ 
+    const whereClause = conditions.length > 0
+      ? `WHERE ${conditions.join(' AND ')}`
+      : '';
+ 
+    const result = await pool.query(
+      `SELECT * FROM products ${whereClause} ORDER BY product_id DESC`,
+      values
+    );
+ 
     res.json(result.rows);
-  } catch (error){
-    console.error(error)
-    res.status(500).json({error:error.message});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -120,5 +145,17 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({error : error.message});
   }
 });
+
+// GET /api/products
+router.get('/', async (req, res) => {
+  try{
+    const result = await pool.query('SELECT * FROM products')
+    res.json(result.rows);
+  } catch (error){
+    console.error(error)
+    res.status(500).json({error:error.message});
+  }
+});
+
 
 export default router;
