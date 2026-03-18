@@ -123,33 +123,10 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-
-//GET /api/products/ FILTER (men också den vanliga GET, metoden? Dvs om ingen filter anges hämtas allt)
-
+// GET /api/products
 router.get('/', async (req, res) => {
-  const params = req.query;//Här finns alla keys
-
-  //Basen för sökfrågan
-  let query = "SELECT * FROM products";
-  let conditions = [];
-  let values = [];
-
-  //Loopa igenom alla inkommande query params
-  Object.keys(params).forEach((key, index) => {
-    //Lägger till villkor i en lista
-    conditions.push(`${key} = $${index + 1}`);
-    //Lägger till det faktiska värdet i en separat lista
-    values.push(params[key]);
-  });
-
-  //Om ett filter används, lägg till WHERE och slå ihop dem med AND
-  if(conditions.length > 0){
-    query += " WHERE " + conditions.join(" AND ");
-  }
-
   try{
-    //Skicka frågan till databasen
-    const result = await pool.query(query, values);
+    const result = await pool.query('SELECT * FROM products')
     res.json(result.rows);
   } catch (error){
     console.error(error)
