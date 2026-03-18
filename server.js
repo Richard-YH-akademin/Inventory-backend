@@ -11,9 +11,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("API fungerar");
-});
+// app.get("/", (req, res) => {
+//   res.send("API fungerar");
+// });
 
 app.use("/api/products", productRouter);
 

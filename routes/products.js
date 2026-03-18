@@ -1,19 +1,18 @@
 import express from 'express';
 const router = express.Router();
-//import { products } from '../db/mockData';
 import pool from "../db/db.js";
-//const pool = require('../db')
+
 
 // GET /api/products
-router.get('/', async (req, res) => {
-  try{
-    const result = await pool.query('SELECT * FROM products')
-    res.json(result.rows);
-  } catch (error){
-    console.error(error)
-    res.status(500).json({error:error.message});
-  }
-});
+// router.get('/', async (req, res) => {
+//   try{
+//     const result = await pool.query('SELECT * FROM products')
+//     res.json(result.rows);
+//   } catch (error){
+//     console.error(error)
+//     res.status(500).json({error:error.message});
+//   }
+// });
 
 // GET /api/products/:id
 router.get('/:id', async (req, res) => {
@@ -30,6 +29,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+//POST
 router.post('/', async (req, res) => {
   try{
     const { equipment_id,
@@ -73,7 +73,9 @@ const ALLOWED_FIELDS = ['equipment_id', 'article', 'make', 'model', 'status_id',
   'arrived_from', 'purchased_to_user_id', 'notes', 'category_id', 'user_id'];
   //bättre att de ligger utanför routern? enkelt att återanvändas/uppdateras utan att rör logiken 
   // + skapas en gång, ligger kvar i minnet
-router.patch('/:id', async (req, res) => {
+
+//PATCH (ska användas när man trycker på pennan för att uppdatera alla fält)
+  router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -118,6 +120,40 @@ router.delete('/:id', async (req, res) => {
    
   } catch (error) {
     res.status(500).json({error : error.message});
+  }
+});
+
+
+//GET /api/products/ FILTER (men också den vanliga GET, metoden? Dvs om ingen filter anges hämtas allt)
+
+router.get('/', async (req, res) => {
+  const params = req.query;//Här finns alla keys
+
+  //Basen för sökfrågan
+  let query = "SELECT * FROM products";
+  let conditions = [];
+  let values = [];
+
+  //Loopa igenom alla inkommande query params
+  Object.keys(params).forEach((key, index) => {
+    //Lägger till villkor i en lista
+    conditions.push(`${key} = $${index + 1}`);
+    //Lägger till det faktiska värdet i en separat lista
+    values.push(params[key]);
+  });
+
+  //Om ett filter används, lägg till WHERE och slå ihop dem med AND
+  if(conditions.length > 0){
+    query += " WHERE " + conditions.join(" AND ");
+  }
+
+  try{
+    //Skicka frågan till databasen
+    const result = await pool.query(query, values);
+    res.json(result.rows);
+  } catch (error){
+    console.error(error)
+    res.status(500).json({error:error.message});
   }
 });
 
