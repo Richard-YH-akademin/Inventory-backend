@@ -2,43 +2,17 @@ import express from 'express';
 const router = express.Router();
 import pool from "../db/db.js";
 
-//GET /api/products
-router.get('/', async (req, res) => {
-  try {
-    const FILTERABLE_FIELDS = ['category_id', 'user_id', 'status_id', 'purchased_to_user_id', 'arrived_from', 'article', 'make', 'model'];
- 
-    const conditions = [];
-    const values = [];
- 
-    //fritext sökning på utrustningsid
-    if (req.query.equipment_id) {
-      values.push(`%${req.query.equipment_id}%`);
-      conditions.push(`equipment_id::text ILIKE $${values.length}`); //ILIKE = gör den case-insensitive??
-    }
- 
-    //Filter
-    Object.entries(req.query).forEach(([key, value]) =>{
-      if (FILTERABLE_FIELDS.includes(key) && value) {
-        values.push(value);
-        conditions.push(`${key} = $${values.length}`);
-      }
-    });
- 
-    const whereClause = conditions.length > 0
-      ? `WHERE ${conditions.join(' AND ')}`
-      : '';
- 
-    const result = await pool.query(
-      `SELECT * FROM products ${whereClause} ORDER BY product_id DESC`,
-      values
-    );
- 
-    res.json(result.rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
-});
+
+// GET /api/products
+// router.get('/', async (req, res) => {
+//   try{
+//     const result = await pool.query('SELECT * FROM products')
+//     res.json(result.rows);
+//   } catch (error){
+//     console.error(error)
+//     res.status(500).json({error:error.message});
+//   }
+// });
 
 // GET /api/products/:id
 router.get('/:id', async (req, res) => {
@@ -55,6 +29,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+//POST
 router.post('/', async (req, res) => {
   try{
     const { equipment_id,
@@ -98,7 +73,9 @@ const ALLOWED_FIELDS = ['equipment_id', 'article', 'make', 'model', 'status_id',
   'arrived_from', 'purchased_to_user_id', 'notes', 'category_id', 'user_id'];
   //bättre att de ligger utanför routern? enkelt att återanvändas/uppdateras utan att rör logiken 
   // + skapas en gång, ligger kvar i minnet
-router.patch('/:id', async (req, res) => {
+
+//PATCH (ska användas när man trycker på pennan för att uppdatera alla fält)
+  router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -156,6 +133,5 @@ router.get('/', async (req, res) => {
     res.status(500).json({error:error.message});
   }
 });
-
 
 export default router;
