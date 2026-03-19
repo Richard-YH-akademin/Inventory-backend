@@ -39,6 +39,30 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+//GET api/products/stats
+router.get("/stats", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        COUNT(*) FILTER (WHERE status_id = 1) AS active,
+        COUNT(*) FILTER (WHERE status_id = 2) AS inactive,
+        COUNT(*) FILTER (WHERE status_id = 3) AS decommissioned
+      FROM products
+    `);
+
+    const { active, inactive, decommissioned } = result.rows[0];
+
+    res.json({
+      active:           Number(active),
+      inactive:         Number(inactive),
+      decommissioned:   Number(decommissioned),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Kunde inte hämta statistik" });
+  }
+});
  
 // GET /api/products/:id
 router.get('/:id', async (req, res) => {
