@@ -1,3 +1,4 @@
+--Seedad data som körs första gången vi startade projektet, men måste "kallas på" i terminalen för att köras igen och sättat databasen i ett startläge
 -- Rensa befintlig data (i rätt ordning pga foreign keys)
 TRUNCATE TABLE products, users RESTART IDENTITY CASCADE;
 
