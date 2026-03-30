@@ -6,6 +6,9 @@ import pool from "../db/db.js";//Verktyget som gör att vi kan prata med databas
 router.get('/', async (req, res) => {
   try {
     const FILTERABLE_FIELDS = ['user_id', 'status_id', 'purchased_to_user_id', 'arrived_from', 'article', 'make', 'model'];
+
+    //Vitlista för sortering. Kan utvecklas till att bli fler fält
+    const SORTABLE_FIELDS = ['article', 'status', 'warranty_start', 'warranty_end'];
  
     //Vilken av parametrarna man vill söka på hamnar här i denna tomma array. Tex user_id
     const conditions = [];
@@ -51,10 +54,19 @@ router.get('/', async (req, res) => {
     const whereClause = conditions.length > 0
       ? `WHERE ${conditions.join(' AND ')}` 
       : '';
+
+      //Sortering: Hämtar sortBy och sortOrder från frontend.
+      //Om frontend inte skickar något används product_id och DESC som standard
+      const sortBy = SORTABLE_FIELDS.includes(req.query.sortBy)
+      ? req.query.sortBy : 'product_id';
+
+      //Ser till att det bara är ASC eller DESC som kan placeras i queryn.
+      const sortOrder = req.query.sortOrder === 'ASC' ? 'ASC' : 'DESC';
+
  
     //Query skickas in till databasen och query med värden sätts ihop tack vare pool.query
     const result = await pool.query(
-      `SELECT * FROM products ${whereClause} ORDER BY product_id DESC`,
+      `SELECT * FROM products ${whereClause} ORDER BY ${sortBy} ${sortOrder}`,
       values
     );
     //res.json sickar tillbaka det som hittades med queryn som JSON. Om inget hittas är resultatet bara tomt.
