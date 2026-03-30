@@ -5,8 +5,7 @@ import pool from "../db/db.js";//Verktyget som gör att vi kan prata med databas
 //GET /api/products
 router.get('/', async (req, res) => {
   try {
-    //Skydda mot SQL-injection
-    const FILTERABLE_FIELDS = ['category_id', 'user_id', 'status_id', 'purchased_to_user_id', 'arrived_from', 'article', 'make', 'model'];
+    const FILTERABLE_FIELDS = ['user_id', 'status_id', 'purchased_to_user_id', 'arrived_from', 'article', 'make', 'model'];
  
     //Vilken av parametrarna man vill söka på hamnar här i denna tomma array. Tex user_id
     const conditions = [];
@@ -27,6 +26,16 @@ router.get('/', async (req, res) => {
     //Object.entries(req.query) gör så att informationen i req.query blir till en array av par (alltså nyckel-värde-par). Tex. ["category", "laptop"], ["status", "active"]
     //Anledningen till att man gör det till en array är för att man inte kan loopa igenom ett objekt med foreach.
     //Foreach loopar igenom varje par och delar upp dem i key och value. Det kallas deconstructuring.
+    if (req.query.category_id){ //är det en array? används som är. Är det en sträng? Lägg in i array
+      const ids = Array.isArray(req.query.category_id)
+        ? req.query.category_id //redan en array om flera skickades
+        : [req.query.category_id]; //gör om ensamt värde till array
+
+      const placeholders = ids.map((_, i) => `$${values.length + i + 1}`).join(', ');
+      ids.forEach(id => values.push(id));
+      conditions.push(`category_id IN (${placeholders})`);
+    }
+
     Object.entries(req.query).forEach(([key, value]) =>{
     //If-satsen kollar om det som finns i key också finns i vit-listan vi skapat. Det andra villkoret i denna if-sats är att value inte är tomt
       if (FILTERABLE_FIELDS.includes(key) && value) {
