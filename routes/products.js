@@ -180,6 +180,8 @@ const ALLOWED_FIELDS = ['equipment_id', 'article', 'make', 'model', 'status_id',
 
 
 router.patch('/:id', async (req, res) => {
+  //  console.log("PATCH anropades med id:", req.params.id);
+  // console.log("Body:", req.body);
   try {
     //Deconstruct av req.params för att plocka ut värdet för id
     const { id } = req.params;

@@ -7,7 +7,9 @@ const app = express();
 
 //Tillåter att hämta och skicka data från/till dessa adresser. Gör så att back och front litar på varandra.
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"]
+  origin: ["http://localhost:5173", "http://localhost:5174"],
+   methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type"]
 }));
 
 //För att servern ska kunna läsa JSON-data som skickas i en request. Middleware gör om JSON till JavaScript.
