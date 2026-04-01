@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import productRouter from "./routes/products.js";
+import authRouter from "./routes/auth.js";
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use(express.json());
 
 //Alla requests som börjar med "/api/products" ska skickas vidare till productRouter
 app.use("/api/products", productRouter);
+
+app.use("/auth", authRouter);
 
 //Sätter igång servern som lyssnar efter request från frontend
 app.listen(3000, () => {
