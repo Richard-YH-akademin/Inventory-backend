@@ -110,6 +110,43 @@ router.get("/stats", async (req, res) => {
     res.status(500).json({ error: "Kunde inte hämta statistik" });
   }
 });
+
+// GET /api/products/categories
+router.get('/categories', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, name FROM categories ORDER BY name');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET /api/products/users
+router.get('/users', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT id, lastname || ', ' || firstname AS name 
+            FROM users 
+            ORDER BY lastname, firstname
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET /api/products/statuses
+router.get('/statuses', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, name FROM statuses ORDER BY name');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
  
 // GET /api/products/:id
 router.get('/:id', async (req, res) => {
