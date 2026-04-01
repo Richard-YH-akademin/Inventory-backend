@@ -114,7 +114,7 @@ router.get("/stats", async (req, res) => {
 // GET /api/products/categories
 router.get('/categories', async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, name FROM categories ORDER BY name');
+        const result = await pool.query('SELECT category_id, name FROM categories ORDER BY name');
         res.json(result.rows);
     } catch (error) {
         console.error(error);
@@ -126,9 +126,9 @@ router.get('/categories', async (req, res) => {
 router.get('/users', async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT id, lastname || ', ' || firstname AS name 
+            SELECT user_id, last_name || ', ' || first_name AS name 
             FROM users 
-            ORDER BY lastname, firstname
+            ORDER BY last_name, first_name
         `);
         res.json(result.rows);
     } catch (error) {
@@ -140,7 +140,7 @@ router.get('/users', async (req, res) => {
 // GET /api/products/statuses
 router.get('/statuses', async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, name FROM statuses ORDER BY name');
+        const result = await pool.query('SELECT status_id, name FROM status ORDER BY name');
         res.json(result.rows);
     } catch (error) {
         console.error(error);
