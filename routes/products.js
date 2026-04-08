@@ -5,7 +5,7 @@ import pool from "../db/db.js";//Verktyget som gör att vi kan prata med databas
 //GET /api/products
 router.get('/', async (req, res) => {
   try {
-    const FILTERABLE_FIELDS = ['user_id', 'status_id', 'purchased_to_user_id', 'arrived_from', 'article', 'make', 'model'];
+    const FILTERABLE_FIELDS = ['user_id', 'status_id', 'purchased_to', 'arrived_from', 'article', 'make', 'model'];
 
     //Vitlista för sortering. Kan utvecklas till att bli fler fält
     const SORTABLE_FIELDS = ['article', 'status', 'warranty_start', 'warranty_end'];
@@ -66,7 +66,16 @@ router.get('/', async (req, res) => {
  
     //Query skickas in till databasen och query med värden sätts ihop tack vare pool.query
     const result = await pool.query(
-      `SELECT * FROM products ${whereClause} ORDER BY ${sortBy} ${sortOrder}`,
+      `SELECT
+      p.*,
+      c.name AS category,
+      u.last_name || ',' || u.first_name AS user_name,
+      s.name AS status
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.category_id
+      LEFT JOIN users u ON p.user_id = u.user_id
+      LEFT JOIN status s ON p.status_id = s.status_id
+       ${whereClause} ORDER BY ${sortBy} ${sortOrder}`,
       values
     );
     //res.json sickar tillbaka det som hittades med queryn som JSON. Om inget hittas är resultatet bara tomt.
@@ -180,7 +189,7 @@ router.post('/', async (req, res) => {
     inventory_age_days,
     purchase_value,
     arrived_from,
-    purchased_to_user_id,
+    purchased_to,
     notes,
     category_id,
     user_id} = req.body;
@@ -189,7 +198,7 @@ router.post('/', async (req, res) => {
       `INSERT INTO products (
         equipment_id, article, make, model, status_id,
         warranty_start, warranty_end, inventory_age_days, purchase_value,
-        arrived_from, purchased_to_user_id, notes, category_id, user_id
+        arrived_from, purchased_to, notes, category_id, user_id
       ) VALUES (
         $1, $2, $3, $4, $5, $6,
         $7, $8, $9, $10,
@@ -199,7 +208,7 @@ router.post('/', async (req, res) => {
       [
         equipment_id, article, make, model, status_id,
         warranty_start, warranty_end, inventory_age_days, purchase_value,
-        arrived_from, purchased_to_user_id, notes, category_id, user_id
+        arrived_from, purchased_to, notes, category_id, user_id
       ]
     );
 
@@ -211,7 +220,7 @@ router.post('/', async (req, res) => {
  
 const ALLOWED_FIELDS = ['equipment_id', 'article', 'make', 'model', 'status_id',
   'warranty_start', 'warranty_end', 'inventory_age_days', 'purchase_value',
-  'arrived_from', 'purchased_to_user_id', 'notes', 'category_id', 'user_id'];
+  'arrived_from', 'purchased_to', 'notes', 'category_id', 'user_id'];
   //bättre att de ligger utanför routern? enkelt att återanvändas/uppdateras utan att rör logiken
   // + skapas en gång, ligger kvar i minnet
 
