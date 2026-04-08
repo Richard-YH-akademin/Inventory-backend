@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
 
       const placeholders = ids.map((_, i) => `$${values.length + i + 1}`).join(', ');
       ids.forEach(id => values.push(id));
-      conditions.push(`category_id IN (${placeholders})`);
+      conditions.push(`p.category_id IN (${placeholders})`);
     }
 
     Object.entries(req.query).forEach(([key, value]) =>{
@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
         values.push(value);
         //Skapar en query med vilken key och vilket värde. Värdet kopplas baserat på platsen i values-listan. Detta för att säkerställa att t.ex. category inte får värdet active
         //Denna kod ger arrayen conditions = ["category = $1", "status = $2"]
-        conditions.push(`${key} = $${values.length}`);
+        conditions.push(`p.${key} = $${values.length}`);
       }
     });
     //Det är en kompakt if-sats som säger att om det finns minst ett condition - sätt ihop alla conditions till en sträng med Join. Om det finns noll conditions sätt whereClause till en tom sträng
@@ -154,6 +154,22 @@ router.get('/statuses', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
+    }
+});
+
+// GET /api/products/makes
+router.get('/makes', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT DISTINCT make
+      FROM products
+      WHERE make IS NOT NULL
+      ORDER BY make
+      `);
+      res.json(result.rows);
+    } catch (error){
+      console.error(error);
+      res.status(500).json({error: error.message});
     }
 });
  
