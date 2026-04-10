@@ -69,7 +69,7 @@ router.get('/', async (req, res) => {
       `SELECT
       p.*,
       c.name AS category,
-      u.last_name || ',' || u.first_name AS user_name,
+      u.last_name || ', ' || u.first_name AS user_name,
       s.name AS status
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.category_id
