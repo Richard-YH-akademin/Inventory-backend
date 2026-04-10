@@ -2,6 +2,8 @@ import express from "express";
 import { ConfidentialClientApplication } from "@azure/msal-node";
 import { msalConfig } from "../authConfig.js";
 
+//Denna fil hanterar trafiken mellan appen och Microsoft
+
 const router = express.Router();
 
 console.log("DEBUG: Försöker skapa msalClient med:", msalConfig.auth.clientId);
@@ -27,7 +29,7 @@ router.get("/login", async (req, res) => {
             prompt: "select_account"
         });
         console.log("Fullständig URL som skickas till Microsoft:", authUrl);
-        //Skickar användaren till Microsoft
+        //Skickar användaren till Microsoft på den skapade URL:en
         res.redirect(authUrl);
         //Om något går fel fångas det upp här
     } catch (error) {
@@ -53,12 +55,34 @@ router.get("/redirect", async (req, res) => {
             email: tokenResponse.account.username,
         };
 
-        //Skickar användaren tillbaka till frontend med användarinfo
-        res.redirect(`${process.env.FRONTEND_URL}?user=${JSON.stringify(user)}`);
+        // PASSPORT-MAGI: Spara användaren i sessionen och skickar en cookie till webbläsaren
+        req.login(user, (err) => {
+            if (err) {
+                console.error("Session Error:", err);
+                return res.redirect(`${process.env.FRONTEND_URL}?error=session_failed`);
+            }
+
+        //Skickar användaren tillbaka till frontend (utan user i URL:en)
+        return res.redirect(process.env.FRONTEND_URL);
+        });
+
     } catch (error) {
         console.error("Redirect error: ", error);
-        res.status(500).json({error: error.message});
+        res.redirect(`${process.env.FRONTEND_URL}?error=login_failed`);
     }
+});
+
+// Route 3: Vem är jag? (Anropas av React-hooken)
+router.get("/me", (req, res) => {
+    // Passport ser till att req.user finns om sessionen är giltig
+    if (req.isAuthenticated && req.isAuthenticated()) {
+        console.log("Session bekräftad för:", req.user.email);
+        return res.json({ user: req.user });
+    }
+    
+    // Om ingen session finns, svara med 401
+    console.log("Ingen session hittades vid anrop till /me");
+    res.status(401).json({ user: null });
 });
 
 //Route 3 Logga ut användare
