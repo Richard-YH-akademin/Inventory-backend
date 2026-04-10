@@ -10,7 +10,8 @@ const app = express();
 app.use(cors({
   origin: ["http://localhost:5173", "http://localhost:5174"],
    methods: ["GET", "POST", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type"]
+  allowedHeaders: ["Content-Type"],
+  credentials: true
 }));
 
 //För att servern ska kunna läsa JSON-data som skickas i en request. Middleware gör om JSON till JavaScript.
@@ -26,6 +27,7 @@ app.use("/api/products", productRouter);
 app.use("/auth", authRouter);
 
 //Sätter igång servern som lyssnar efter request från frontend
+//Byta ut 3000 till annat när vi flyttar till Render
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
