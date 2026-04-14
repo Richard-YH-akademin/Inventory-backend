@@ -50,21 +50,13 @@ router.get("/redirect", async (req, res) => {
         });
 
         //Hämtar användarinfo från token
-        const user = {
+        req.session.user = {
             name: tokenResponse.account.name,
             email: tokenResponse.account.username,
         };
 
-        // PASSPORT-MAGI: Spara användaren i sessionen och skickar en cookie till webbläsaren
-        req.login(user, (err) => {
-            if (err) {
-                console.error("Session Error:", err);
-                return res.redirect(`${process.env.FRONTEND_URL}?error=session_failed`);
-            }
-
         //Skickar användaren tillbaka till frontend (utan user i URL:en)
-        return res.redirect(process.env.FRONTEND_URL);
-        });
+        res.redirect(process.env.FRONTEND_URL);
 
     } catch (error) {
         console.error("Redirect error: ", error);
@@ -74,10 +66,8 @@ router.get("/redirect", async (req, res) => {
 
 // Route 3: Vem är jag? (Anropas av React-hooken)
 router.get("/me", (req, res) => {
-    // Passport ser till att req.user finns om sessionen är giltig
-    if (req.isAuthenticated && req.isAuthenticated()) {
-        console.log("Session bekräftad för:", req.user.email);
-        return res.json({ user: req.user });
+    if (req.session.user) {
+        return res.json({ user: req.session.user });
     }
     
     // Om ingen session finns, svara med 401
@@ -87,7 +77,10 @@ router.get("/me", (req, res) => {
 
 //Route 3 Logga ut användare
 router.get("/logout", (req, res) => {
-    res.redirect(process.env.POST_LOGOUT_REDIRECT_URI);
+    req.session.destroy(() => {
+        res.redirect(process.env.POST_LOGOUT_REDIRECT_URI);
+    });
+    
 });
 
 export default router;
