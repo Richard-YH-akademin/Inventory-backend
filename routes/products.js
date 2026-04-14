@@ -172,7 +172,52 @@ router.get('/makes', async (req, res) => {
       res.status(500).json({error: error.message});
     }
 });
- 
+
+router.get('/articles', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT DISTINCT article
+      FROM products
+      WHERE article IS NOT NULL
+      ORDER BY article
+      `);
+      res.json(result.rows);
+    } catch (error){
+      console.error(error);
+      res.status(500).json({error: error.message});
+    }
+});
+
+router.get('/models', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT DISTINCT model
+      FROM products
+      WHERE model IS NOT NULL
+      ORDER BY model
+      `);
+      res.json(result.rows);
+    } catch (error){
+      console.error(error);
+      res.status(500).json({error: error.message});
+    }
+});
+
+router.get('/arrivedfrom', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT DISTINCT arrived_from
+      FROM products
+      WHERE arrived_from IS NOT NULL
+      ORDER BY arrived_from
+      `);
+      res.json(result.rows);
+    } catch (error){
+      console.error(error);
+      res.status(500).json({error: error.message});
+    }
+});
+
 // GET /api/products/:id
 router.get('/:id', async (req, res) => {
   try{
