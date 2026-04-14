@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import session from "express-session";
 import cors from "cors";
 import productRouter from "./routes/products.js";
 import authRouter from "./routes/auth.js";
@@ -17,9 +18,16 @@ app.use(cors({
 //För att servern ska kunna läsa JSON-data som skickas i en request. Middleware gör om JSON till JavaScript.
 app.use(express.json());
 
-// app.get("/", (req, res) => {
-//   res.send("API fungerar");
-// });
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true, //Javascript i fronted kan inte läsa cookien
+    secure: false, //sätt till true när du kör HTTPS i produktion
+    maxAge: 1000 * 60 * 60 * 8 //8 timmar
+  }
+}));
 
 //Alla requests som börjar med "/api/products" ska skickas vidare till productRouter
 app.use("/api/products", productRouter);
