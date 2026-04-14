@@ -70,7 +70,8 @@ router.get('/', async (req, res) => {
       p.*,
       c.name AS category,
       u.last_name || ', ' || u.first_name AS user_name,
-      s.name AS status
+      s.name AS status,
+      DATE_PART('day', NOW() - p.created_at)::INTEGER AS inventory_age_days
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.category_id
       LEFT JOIN users u ON p.user_id = u.user_id
@@ -247,29 +248,30 @@ router.post('/', async (req, res) => {
     status_id,
     warranty_start,
     warranty_end,
-    inventory_age_days,
     purchase_value,
     arrived_from,
     purchased_to,
     notes,
     category_id,
-    user_id} = req.body;
+    user_id,
+    created_at} = req.body;
 
     const result = await pool.query(
       `INSERT INTO products (
         equipment_id, article, make, model, status_id,
-        warranty_start, warranty_end, inventory_age_days, purchase_value,
-        arrived_from, purchased_to, notes, category_id, user_id
+        warranty_start, warranty_end, purchase_value,
+        arrived_from, purchased_to, notes, category_id, user_id, created_at
       ) VALUES (
         $1, $2, $3, $4, $5, $6,
         $7, $8, $9, $10,
         $11, $12, $13, $14
-      ) RETURNING *`, //Returning är en bekräftelse på vad som skapats, alltså man får se vad man skapat
+      ) RETURNING *,
+       DATE_PART('day', NOW() - created_at)::INTEGER AS inventory_age_days`, //Returning är en bekräftelse på vad som skapats, alltså man får se vad man skapat
        //Värdena som ska placeras på siffrornas plats
       [
         equipment_id, article, make, model, status_id,
-        warranty_start, warranty_end, inventory_age_days, purchase_value,
-        arrived_from, purchased_to, notes, category_id, user_id
+        warranty_start, warranty_end, purchase_value,
+        arrived_from, purchased_to, notes, category_id, user_id, created_at || new Date()
       ]
     );
 
@@ -280,8 +282,8 @@ router.post('/', async (req, res) => {
 });
  
 const ALLOWED_FIELDS = ['equipment_id', 'article', 'make', 'model', 'status_id',
-  'warranty_start', 'warranty_end', 'inventory_age_days', 'purchase_value',
-  'arrived_from', 'purchased_to', 'notes', 'category_id', 'user_id'];
+  'warranty_start', 'warranty_end', 'purchase_value','arrived_from', 'purchased_to',
+  'notes', 'category_id', 'user_id', 'created_at'];
   //bättre att de ligger utanför routern? enkelt att återanvändas/uppdateras utan att rör logiken
   // + skapas en gång, ligger kvar i minnet
 
@@ -314,7 +316,8 @@ router.patch('/:id', async (req, res) => {
     const values = [...Object.values(fields), id];
  
     const result = await pool.query(
-      `UPDATE products SET ${setClause} WHERE product_id = $${values.length} RETURNING *`,
+      `UPDATE products SET ${setClause} WHERE product_id = $${values.length} RETURNING *,
+      DATE_PART('day', NOW() - created_at)::INTEGER AS inventory_age_days`,
       values
     );
  
