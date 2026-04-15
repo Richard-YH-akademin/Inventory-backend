@@ -55,8 +55,14 @@ router.get("/redirect", async (req, res) => {
             email: tokenResponse.account.username,
         };
 
-        //Skickar användaren tillbaka till frontend (utan user i URL:en)
-        res.redirect(process.env.FRONTEND_URL);
+         // Vänta på att sessionen sparas innan vi redirectar
+        req.session.save((err) => {
+            if (err) {
+                console.error("Session save error:", err);
+                return res.redirect(`${process.env.FRONTEND_URL}?error=login_failed`);
+            }
+            res.redirect(process.env.FRONTEND_URL);
+        });
 
     } catch (error) {
         console.error("Redirect error: ", error);
