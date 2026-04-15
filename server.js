@@ -9,7 +9,7 @@ const app = express();
 
 //Tillåter att hämta och skicka data från/till dessa adresser. Gör så att back och front litar på varandra.
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: ["https://inventory-frontend-ngib.onrender.com"],
    methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type"],
   credentials: true
@@ -36,6 +36,8 @@ app.use("/auth", authRouter);
 
 //Sätter igång servern som lyssnar efter request från frontend
 //Byta ut 3000 till annat när vi flyttar till Render
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+//app.listen(3000, () => {
+//  console.log("Server running on port 3000");
+const PORT = process.env.PORT || 3000; 
+app.listen(PORT, '0.0.0.0', () => { console.log(`Servern körs på port ${PORT}`); 
 });
