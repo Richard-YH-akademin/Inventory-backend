@@ -18,13 +18,16 @@ app.use(cors({
 //För att servern ska kunna läsa JSON-data som skickas i en request. Middleware gör om JSON till JavaScript.
 app.use(express.json());
 
+app.set('trust proxy', 1); // Lägg denna INNAN session-middlewaren
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true, //Javascript i fronted kan inte läsa cookien
-    secure: false, //sätt till true när du kör HTTPS i produktion
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 1000 * 60 * 60 * 8 //8 timmar
   }
 }));
