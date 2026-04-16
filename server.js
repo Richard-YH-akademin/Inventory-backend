@@ -9,7 +9,7 @@ const app = express();
 
 //Tillåter att hämta och skicka data från/till dessa adresser. Gör så att back och front litar på varandra.
 app.use(cors({
-  origin: ["https://inventory-frontend-ngib.onrender.com"],
+  origin: [process.env.FRONTEND_URL],
    methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type"],
   credentials: true
