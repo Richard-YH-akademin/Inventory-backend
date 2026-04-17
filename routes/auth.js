@@ -61,7 +61,7 @@ router.get("/redirect", async (req, res) => {
                 console.error("Session save error:", err);
                 return res.redirect(`${process.env.FRONTEND_URL}?error=login_failed`);
             }
-            res.redirect(process.env.FRONTEND_URL);
+            res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
         });
 
     } catch (error) {
