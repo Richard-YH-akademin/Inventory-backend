@@ -71,13 +71,14 @@ router.get("/redirect", async (req, res) => {
 });
 
 // Route 3: Vem är jag? (Anropas av React-hooken)
+//Kontrollerar om en session är aktiv eller ej
 router.get("/me", (req, res) => {
     if (req.session.user) {
         return res.json({ user: req.session.user });
     }
     
     // Om ingen session finns, svara med 401
-    console.log("Ingen session hittades vid anrop till /me");
+    //console.log("Ingen session hittades vid anrop till /me");
     res.status(401).json({ user: null });
 });
 
